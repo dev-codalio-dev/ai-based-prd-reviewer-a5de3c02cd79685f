@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_12_190657) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_30_220136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -73,6 +73,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_12_190657) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "feedbacks", force: :cascade do |t|
+    t.string "category"
+    t.text "specific_feedback"
+    t.text "suggested_improvement"
+    t.bigint "review_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_feedbacks_on_review_id"
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string "slug", null: false
     t.integer "sluggable_id", null: false
@@ -83,6 +93,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_12_190657) do
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_id"
     t.index ["sluggable_type"], name: "index_friendly_id_slugs_on_sluggable_type"
+  end
+
+  create_table "prds", force: :cascade do |t|
+    t.string "title"
+    t.text "content"
+    t.datetime "upload_timestamp"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_prds_on_user_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.string "overall_grade"
+    t.text "analysis_summary"
+    t.datetime "review_timestamp"
+    t.bigint "prd_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["prd_id"], name: "index_reviews_on_prd_id"
   end
 
   create_table "solid_cable_messages", force: :cascade do |t|
@@ -260,6 +290,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_12_190657) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "feedbacks", "reviews"
+  add_foreign_key "prds", "users"
+  add_foreign_key "reviews", "prds"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
